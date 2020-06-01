@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.quartz.mapper.JobAndTriggerMapper">  
+    
+    <resultMap id="JobAndTriggerDto" type="com.quartz.dto.JobAndTriggerDto">     
+	    <result property="id" column="id"/>     
+	    <result property="jobName" column="jobName"/>     
+	    <result property="jobDescription" column="jobDescription"/>  
+	    <result property="jobGroupName" column="jobGroupName" />  
+	    <result property="jobClassName" column="jobClassName" />  
+	    <result property="triggerName" column="triggerName" />  
+	    <result property="triggerGroupName" column="triggerGroupName" />  
+	    <result property="prevFireTime" column="prevFireTime" />  
+	    <result property="nextFireTime" column="nextFireTime" />  
+	    <result property="cronExpression" column="cronExpression" />  
+	    <result property="triggerState" column="triggerState" />  
+	    <result property="triggerState" column="triggerState" />  
+	    <result property="jobData" column="jobData" typeHandler="com.quartz.util.BlobTypeHandler" />  
+	</resultMap> 
+    
+    <select id="getJobAndTriggerDetails" resultMap="JobAndTriggerDto">
+			SELECT
+				jd.JOB_NAME AS jobName,
+				jd.DESCRIPTION AS jobDescription,
+				jd.JOB_GROUP AS jobGroupName,
+				jd.JOB_CLASS_NAME AS jobClassName,
+				t.TRIGGER_NAME AS triggerName,
+				t.TRIGGER_GROUP AS triggerGroupName,
+				FROM_UNIXTIME(t.PREV_FIRE_TIME/1000,'%Y-%m-%d %T') AS prevFireTime,
+				FROM_UNIXTIME(t.NEXT_FIRE_TIME/1000,'%Y-%m-%d %T') AS nextFireTime,
+				ct.CRON_EXPRESSION AS cronExpression,
+				t.TRIGGER_STATE AS triggerState
+				,jd.JOB_DATA as jobData
+			FROM
+				qrtz_job_details jd
+			INNER JOIN qrtz_triggers t on jd.JOB_NAME = t.JOB_NAME and jd.job_group = t.job_group
+			INNER JOIN qrtz_cron_triggers ct ON 
+			t.TRIGGER_NAME = ct.TRIGGER_NAME
+			AND t.TRIGGER_GROUP = ct.TRIGGER_GROUP
+    </select>
+    
+    <select id="getJobAndTriggerDto" resultMap="JobAndTriggerDto">
+			SELECT
+				jd.JOB_NAME AS jobName,
+				jd.DESCRIPTION AS jobDescription,
+				jd.JOB_GROUP AS jobGroupName,
+				jd.JOB_CLASS_NAME AS jobClassName,
+				t.TRIGGER_NAME AS triggerName,
+				t.TRIGGER_GROUP AS triggerGroupName,
+				FROM_UNIXTIME(t.PREV_FIRE_TIME/1000,'%Y-%m-%d %T') AS prevFireTime,
+				FROM_UNIXTIME(t.NEXT_FIRE_TIME/1000,'%Y-%m-%d %T') AS nextFireTime,
+				ct.CRON_EXPRESSION AS cronExpression,
+				t.TRIGGER_STATE AS triggerState
+				,jd.JOB_DATA as jobData
+			FROM
+				qrtz_job_details jd
+			INNER JOIN qrtz_triggers t on jd.JOB_NAME = t.JOB_NAME and jd.job_group = t.job_group
+			INNER JOIN qrtz_cron_triggers ct ON 
+			t.TRIGGER_NAME = ct.TRIGGER_NAME
+			AND t.TRIGGER_GROUP = ct.TRIGGER_GROUP
+    </select>
+    
+</mapper>
